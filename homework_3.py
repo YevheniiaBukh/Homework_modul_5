@@ -25,7 +25,7 @@ def add_contact(args, contacts):
     if name in contacts:
         return "Contact already exists"
     contacts[name] = phone
-    return "Contact dosen't exist. Please add it."
+    return "Contact added"
 
 
 @input_error
@@ -35,7 +35,7 @@ def change_contact(args, contacts):
         contacts[name] = phone
         return "Updated contact"
     else:
-        return "Add this contact"
+        return "Contact dosen't exist. Please add it."
 
 @input_error    
 def show_phone(args, contacts):
