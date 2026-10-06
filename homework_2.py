@@ -8,7 +8,7 @@ text = "Загальний дохід працівника складаєтьс�
 def generator_numbers(text: str):
     
     # Використали регулярні вирази для ідентифікації дійсних чисел у тексті, з урахуванням, що числа чітко відокремлені пробілами.
-    numbers = re.findall(r'\b\d+(?:\.\d+)?\b', text)
+    numbers = re.findall(r' \d+(?:\.\d+)? ', text)
      
     for number in numbers:
         yield float(number)  # Застосуйте конструкцію yield у функції generator_numbers для створення генератора.
