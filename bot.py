@@ -1,26 +1,89 @@
-import re
-from typing import Callable
+def parse_input(user_input):
+    cmd, *args = user_input.split()
+    cmd = cmd.strip().lower()
+    return cmd, *args
 
 
-text = "Загальний дохід працівника складається з декількох частин: 1000.01 як основний дохід, доповнений додатковими надходженнями 27.45 і 324.00 доларів."
-
-# Створили функцію яка приймає рядок з аргументом
-def generator_numbers(text: str):
-    
-    # Використали регулярні вирази для ідентифікації дійсних чисел у тексті, з урахуванням, що числа чітко відокремлені пробілами.
-    numbers = re.findall(r' \d+(?:\.\d+)? ', text)
-     
-    for number in numbers:
-        yield float(number)  # Застосуйте конструкцію yield у функції generator_numbers для створення генератора.
+def input_error(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except ValueError:
+            return "Give me name and phone please."
+        except KeyError:
+            return "This contact doesn't exist."
+        except IndexError:
+            return "Enter the argument for the command."
         
-# Створили функцію яка використовує генератор функції generator_numbers.       
-def sum_profit(text: str, func: Callable):
-    total = 0
-    
-    for number in func(text):
-        total += number
-    return total
-       
-     
-total_income = sum_profit(text, generator_numbers)
-print(f"Загальний дохід: {total_income}")   
+
+    return inner
+
+
+@input_error
+def add_contact(args, contacts):
+    name, phone = args
+    if name in contacts:
+        return "Contact already exists"
+    contacts[name] = phone
+    return "Contact added"
+
+
+@input_error
+def change_contact(args, contacts):
+    name, phone = args
+    if name in contacts:
+        contacts[name] = phone
+        return "Updated contact"
+    else:
+        return "Contact dosen't exist. Please add it."
+
+@input_error    
+def show_phone(args, contacts):
+    name = args[0]
+    if name in contacts:
+        return contacts[name]
+    else:
+        return "This contact not exist"
+
+@input_error
+def show_all(contacts):
+    result = ""
+    for name, contact in contacts.items():
+        result += f'Name {name}, Contact {contact}\n'
+    return result
+
+
+
+ 
+
+def main():
+    contacts = {}
+    print("Welcome to the assistant bot!")
+
+    while True:
+        user_input = input("Enter a command: ")
+        if not user_input.strip():
+            print("Imput cannot be empty.")
+            continue
+        
+        command, *args = parse_input(user_input)
+        
+        if command in ["close", "exit"]:
+            print("Good bye!")
+            break
+        elif command == "hello":
+            print("How can I help you?")
+        elif command == "add":
+            print(add_contact(args, contacts))
+        elif command == "change":
+            print(change_contact(args, contacts))
+        elif command == "phone":
+             print(show_phone(args, contacts))
+        elif command == "all":
+            print(show_all(contacts))
+        else:
+            print("Invalid command.")
+
+
+if __name__ == "__main__":
+    main()
